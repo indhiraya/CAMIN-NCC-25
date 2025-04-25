@@ -1,0 +1,78 @@
+import numpy as np
+import math
+
+def embed_secret(cover_image, secret_bits):
+    cover_image = cover_image.copy()
+    rows, cols = cover_image.shape
+    key_matrix = np.full((rows, cols), '00', dtype='<U2') 
+    secret_idx = 0
+
+    for row in range(rows):
+        for col in range(1, cols, 2):  
+            A = cover_image[row, col-1]
+            B = cover_image[row, col]
+            D = B - A
+
+            if 0 <= D <= 3 and secret_idx < len(secret_bits):
+                s = int(secret_bits[secret_idx])
+                D_secret = D + s
+                B_new = A + D_secret
+                cover_image[row, col] = B_new
+                key_matrix[row, col] = '11' if s == 1 else '10'
+                secret_idx += 1
+            else:
+                key_matrix[row, col] = '00' 
+
+    stego_image = cover_image
+    return stego_image, key_matrix
+
+def extract_secret(stego_image, key_matrix):
+    stego_image = stego_image.copy()
+    rows, cols = stego_image.shape
+    extracted_bits = []
+    recovered_image = np.zeros_like(stego_image)
+
+    for row in range(rows):
+        for col in range(1, cols, 2): 
+            A = stego_image[row, col-1]
+            B = stego_image[row, col]
+            D = B - A
+            key = key_matrix[row, col]
+
+            if key == '11' or key == '10':
+                S = 1 if key == '11' else 0
+                extracted_bits.append(str(S))
+                D_original = D - S
+                original_B = A + D_original
+                recovered_image[row, col] = original_B
+            else:
+                recovered_image[row, col] = B
+
+            recovered_image[row, col-1] = A  
+
+    return recovered_image, ''.join(extracted_bits)
+
+cover_image = np.array([
+    [50, 52, 55, 57],
+    [60, 61, 63, 65],
+    [70, 71, 73, 75],
+    [80, 81, 83, 85]
+], dtype=np.uint8)
+
+secret_bits = "1010"
+
+stego_image, key_matrix = embed_secret(cover_image, secret_bits)
+
+print("Cover Image:")
+print(cover_image)
+print("\nStego Image:")
+print(stego_image)
+print("\nKey Matrix:")
+print(key_matrix)
+
+recovered_image, extracted_secret = extract_secret(stego_image, key_matrix)
+
+print("\nRecovered Image:")
+print(recovered_image)
+print("\nExtracted Secret Bits:")
+print(extracted_secret)
