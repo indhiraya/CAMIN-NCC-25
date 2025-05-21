@@ -1,5 +1,8 @@
 link menuju web:
+www.indhiraayupuspitaningrum-portofolio.site
+
 https://indhiraayupuspitaningrum-portofolio.site/
+
 http://34.128.80.192/
 
 Saya menggunakan WSL ubuntu dalam pengerjaannya.
@@ -115,3 +118,57 @@ dan pastikan ketika menjalankan `docker compose logs deno-app` tampilannya seper
 setelah itu coba buka `http://ip-eksternal/`
 jika berhasil tampilannya akan seperti ini
 ![image](https://github.com/user-attachments/assets/1f08ea5b-76c6-46e7-a93b-87c58e2fd313)
+
+### Cara agar web secure
+karena web yang telah kita buat masih menggunakan http sehingga masih belum secure. jadi kita perlu mengalihkannya ke https. kita akan menggunakan `Cloudeflare`. sebelumnya saya sudah membeli domain di `hostinger` untuk project ctfd sebelumnya. sehingga saya tidak perlu memberikan perlakuan kepada hostinger dan tidak perlu menambah domain. saya hanya perlu menghapus dns dan tunel yang sudah pernah saya buat sebelumnya. lalu saya membuat tunel baru menggunakan domain yang sama hanya mengganti pada ip-nya seperti ini.
+![image](https://github.com/user-attachments/assets/01a913be-2eef-4be1-b0ec-089ac3514539)
+
+setelah itu kita save dan akan terbentuk dns bertipe CNAME. sebenarnya saat ini kita sudah bisa menggunakan https://indhiraayupuspitaningrum-portofolio.site/ dan sudah secure. tetapi jika ingin menggunakan `www` maka kita dapat menambahkan dns record dengan tipe berikut
+| type   | name | content      |
+|--------|------|----------|
+| @ | indhiraayupuspitaningrum-portofolio.site | 34.128.80.192 |
+| A | www   | 34.128.80.192 |
+
+setelah itu bisa menggunakan www.indhiraayupuspitaningrum-portofolio.site
+
+### Fitur:
+- global room
+  setiap user memiliki warna yang berbeda pada nama mereka di bubble chat
+  ![image](https://github.com/user-attachments/assets/8e10e9d8-56a0-404f-92b8-f6c02a81d168)
+  
+- private room
+  - every user can make private room (dengan password dan tanpa password)
+    ada 2 jenis private room yang dapat dibuat oleh user yaitu yang mrnggunakan password dan yang tidak menggunakan password
+    ![image](https://github.com/user-attachments/assets/54177d74-4bdf-442a-b3e8-26e086b6f9d4)
+
+  - every user can find, join, and leave private room
+    user bisa melihat semua private room yang ada dan dapat join ke semuanya. jika user ingin join ke private zoom yang terkunci maka dia harus memasukkan password dulu sebelum masuk. jika tanpa kunci user bisa langsung masuk saja.
+    ![image](https://github.com/user-attachments/assets/e8dd837c-2111-493d-beab-bacfee8adb9b)
+
+    ![image](https://github.com/user-attachments/assets/0fcaefd2-513a-4fb5-bbaf-61cf9874b0f2)
+
+    ![image](https://github.com/user-attachments/assets/24735211-4fb8-4178-9ef0-5fd4104b0adc)
+
+    ![image](https://github.com/user-attachments/assets/5d95b296-3bb9-4047-bdd8-3ac89fa43522)
+    
+  - every user can known who is in the private room
+   
+    ![Screenshot 2025-05-21 232245](https://github.com/user-attachments/assets/0c93b658-df17-4e26-95f1-f33a78199fad)
+
+- polling
+  - multiple option
+
+    ![image](https://github.com/user-attachments/assets/23d99b2a-5be6-4dbd-a682-fa5556da81a5)
+
+  - single option
+
+    ![image](https://github.com/user-attachments/assets/aa074c79-a447-42e9-b5e6-b5714b4a2b30)
+
+  - timer
+    setiap user bisa memberikan timer pada polling sehingga polling tertutup otomatis
+
+    ![image](https://github.com/user-attachments/assets/c56a78d9-0b03-4287-8913-176ba63626c1)
+
+  - close polling
+
+    ![image](https://github.com/user-attachments/assets/bc41c284-85f5-4a91-ab68-54a333f802ca)
