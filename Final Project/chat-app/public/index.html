@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Deno Chat App</title>
+  <link rel="stylesheet" href="/public/style.css" />
+  <script defer type="module" src="/public/app.js"></script>
+</head>
+
+<body>
+  <header>
+    <h1>Chat App</h1>
+  </header>
+  <aside id="sidebar">
+    <h2>Users in Room</h2>
+    <ul id="users"></ul>
+    <hr />
+    <h2>Rooms</h2>
+    <ul id="rooms"></ul>
+    <form id="create-room-form">
+      <input type="text" id="room-name" placeholder="Room name" required />
+      <div class="private-room-checkbox">
+        <input type="checkbox" id="is-private-room" />
+        <label for="is-private-room">Jadikan room ini private</label>
+      </div>
+      <input type="password" id="room-password" placeholder="Masukkan password" class="hidden" />
+      <button type="submit">Create Room</button>
+    </form>
+  </aside>
+  <main>
+    <h2 id="current-room-title">Room: Global</h2>
+    <div id="conversation"></div>
+    <section id="polling" class="hidden">
+      <h3>Buat Polling</h3>
+      <button id="back-button">Back</button>
+      <form id="poll-form">
+        <input type="text" id="poll-question" placeholder="Pertanyaan polling" required />
+
+        <div id="poll-options">
+          <input type="text" name="option" placeholder="Opsi 1" required />
+          <input type="text" name="option" placeholder="Opsi 2" required />
+        </div>
+
+        <label>
+          <input type="checkbox" id="multi-vote-mode" />
+          Izinkan memilih lebih dari satu opsi
+        </label>
+
+        <div>
+          <label for="poll-days">Hari:</label>
+          <input type="number" id="poll-days" name="poll-days" min="0" placeholder="0">
+        </div>
+        <div>
+          <label for="poll-hours">Jam:</label>
+          <input type="number" id="poll-hours" name="poll-hours" min="0" placeholder="0">
+        </div>
+        <div>
+          <label for="poll-minutes">Menit:</label>
+          <input type="number" id="poll-minutes" name="poll-minutes" min="0" placeholder="0">
+        </div>
+        <div>
+          <label for="poll-seconds">Detik:</label>
+          <input type="number" id="poll-seconds" name="poll-seconds" min="0" placeholder="0">
+        </div>
+
+        <div class="poll-buttons">
+          <button type="button" id="add-option">+ Tambah Opsi</button>
+          <button type="submit">Kirim Polling</button>
+        </div>
+      </form>
+      <div id="poll-display"></div>
+    </section>
+
+    <form id="form">
+      <input type="text" id="data" placeholder="send message" autocomplete="off" />
+      <div class="attachment-wrapper">
+        <button type="button" id="attachment-button">📎</button>
+        <ul id="attachment-menu" class="hidden">
+          <li id="attachment-poll">Polling</li>
+        </ul>
+      </div>
+      <button type="submit" id="send">Send</button>
+    </form>
+  </main>
+  <template id="user">
+    <li></li>
+  </template>
+  <template id="message">
+    <div class="message-bubble">
+      <span class="username"></span>
+      <p class=""message-text""></p>
+    </div>
+  </template>
+  <button id="leave-room-button" class="hidden">Leave Room</button>
+</body>
+</html>
