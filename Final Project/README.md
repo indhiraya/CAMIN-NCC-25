@@ -1,3 +1,7 @@
+link menuju web:
+https://indhiraayupuspitaningrum-portofolio.site/
+http://34.128.80.192/
+
 Saya menggunakan WSL ubuntu dalam pengerjaannya.
 ### Langkah-Langkah Pengerjaan
 1. Clone directory CHAT-APP dari https://github.com/ncclaboratory18/Oprec_2025_Pertemuan_3. Jika tidak ingin menclonenya kalian dapat membuat folder dengan struktur sebagai berikut:
