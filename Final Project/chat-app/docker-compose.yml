@@ -1,0 +1,20 @@
+version: '3.8'
+
+services:
+  deno-app:
+    build: .
+    expose:
+      - "8080"
+    volumes:
+      - .:/app
+    restart: always
+
+  nginx:
+    image: nginx:stable
+    ports:
+      - "80:80"
+    volumes:
+      - ./conf/nginx:/etc/nginx/conf.d
+    depends_on:
+      - deno-app
+    restart: always
