@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html>
+
 <head>
   <title>Deno Chat App</title>
   <link rel="stylesheet" href="/public/style.css" />
@@ -25,6 +26,7 @@
       <input type="password" id="room-password" placeholder="Masukkan password" class="hidden" />
       <button type="submit">Create Room</button>
     </form>
+    <button id="leave-room-button" class="hidden">Leave Room</button>
   </aside>
   <main>
     <h2 id="current-room-title">Room: Global</h2>
@@ -87,9 +89,9 @@
   <template id="message">
     <div class="message-bubble">
       <span class="username"></span>
-      <p class=""message-text""></p>
+      <p class="" message-text""></p>
     </div>
   </template>
-  <button id="leave-room-button" class="hidden">Leave Room</button>
 </body>
+
 </html>
