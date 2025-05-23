@@ -81,6 +81,24 @@ socket.onmessage = (event) => {
 
       document.getElementById("leave-room-button").classList.add("hidden");
       break;
+
+    case "room-deleted":
+      if (currentRoom === data.roomName) {
+        alert(`Room "${data.roomName}" telah dihapus oleh pembuatnya.`);
+        document.getElementById("current-room-title").textContent = "Room: Global";
+        currentRoom = "Global";
+        document.getElementById("conversation").innerHTML = "";
+
+        if (roomMessages["Global"]) {
+          for (const msg of roomMessages["Global"]) {
+            document.getElementById("conversation").appendChild(msg.cloneNode(true));
+          }
+        }
+
+        document.getElementById("leave-room-button").classList.add("hidden");
+      }
+      break;
+
   }
 };
 
@@ -105,6 +123,12 @@ function updateRoomList(rooms) {
     const roomTitle = document.createElement("strong");
     roomTitle.textContent = room.name + (room.private ? " 🔒" : "");
 
+    const creatorInfo = document.createElement("small");
+    creatorInfo.style.display = "block";
+    creatorInfo.style.fontSize = "0.75em";
+    creatorInfo.textContent = `Pembuat: ${room.creator}`;
+    roomTitle.appendChild(creatorInfo);
+
     const userList = document.createElement("ul");
     userList.style.marginLeft = "1em";
     userList.style.fontSize = "0.9em";
@@ -126,6 +150,25 @@ function updateRoomList(rooms) {
 
     li.dataset.room = room.name;
     li.dataset.private = room.private;
+
+    if (room.creator === myUsername) {
+      const deleteBtn = document.createElement("button");
+      deleteBtn.textContent = "🗑️";
+      deleteBtn.title = "Hapus Room";
+
+      deleteBtn.addEventListener("click", (e) => {
+        e.stopPropagation(); // Cegah join saat klik tombol
+        const confirmed = confirm(`Apakah Anda yakin ingin menghapus room "${room.name}"?`);
+        if (confirmed) {
+          socket.send(JSON.stringify({
+            event: "delete-room",
+            roomName: room.name
+          }));
+        }
+      });
+
+      li.appendChild(deleteBtn);
+    }
 
     li.addEventListener("click", () => {
       const isPrivate = room.private;
@@ -155,6 +198,8 @@ function addMessage(username, message) {
   const messageP = clone.querySelector("p");
 
   const isSelf = username === myUsername;
+  const convo = document.getElementById("conversation");
+  convo.scrollTop = convo.scrollHeight;
 
   messageDiv.classList.add(isSelf ? "self-message" : "other-message");
   messageDiv.style.backgroundColor = getUserColor(username);
@@ -166,11 +211,12 @@ function addMessage(username, message) {
   if (!roomMessages[currentRoom]) {
     roomMessages[currentRoom] = [];
   }
-  roomMessages[currentRoom].push(clone.cloneNode(true));
+  const finalMessageNode = clone;
+  roomMessages[currentRoom].push(finalMessageNode);
 
   const currentRoomName = document.getElementById("current-room-title").textContent.replace("Room: ", "");
   if (currentRoom === currentRoomName) {
-    document.getElementById("conversation").prepend(clone.cloneNode(true));
+    document.getElementById("conversation").appendChild(clone.cloneNode(true));
   }
 }
 
@@ -288,7 +334,7 @@ pollForm.addEventListener('submit', (e) => {
 
   const timer = (days * 24 * 60 * 60) + (hours * 60 * 60) + (minutes * 60) + seconds;
 
-  const pollId = `poll-${Date.now()}`; // Generate a unique poll ID
+  const pollId = `poll-${Date.now()}`; 
   socket.send(JSON.stringify({
     event: 'create-poll',
     pollId,
@@ -306,7 +352,7 @@ pollForm.addEventListener('submit', (e) => {
   pollSection.classList.add('hidden');
 });
 
-const votedOptions = {}; 
+const votedOptions = {};
 
 function displayPoll(pollId, question, options, allowMultiple = false, timer = 0, creator = "") {
   const isCreator = creator === myUsername;
@@ -326,7 +372,7 @@ function displayPoll(pollId, question, options, allowMultiple = false, timer = 0
   nameSpan.textContent = "Polling";
   messageP.innerHTML = pollMessage;
 
-  document.getElementById("conversation").prepend(clone);
+  document.getElementById("conversation").appendChild(clone);
 
   if (!votedOptions[pollId]) votedOptions[pollId] = new Set();
 
@@ -401,7 +447,7 @@ function updatePollVotes(pollId, votes) {
   const buttons = document.querySelectorAll(`button.poll-option[data-poll-id="${pollId}"]`);
   buttons.forEach(btn => {
     const option = btn.getAttribute('data-option');
-    if (!option) return; 
+    if (!option) return;
     const voteCount = votes[option] ?? 0;
     btn.textContent = `${option} (${voteCount} votes)`;
   });
