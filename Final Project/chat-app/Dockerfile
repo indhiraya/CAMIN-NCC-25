@@ -1,4 +1,4 @@
-FROM denoland/deno:alpine-1.42.1
+FROM denoland/deno:latest
 
 WORKDIR /app
 
@@ -6,4 +6,4 @@ COPY . .
 
 EXPOSE 8080
 
-CMD ["run", "--allow-net", "--allow-read", "main.ts"]
+CMD ["deno", "task", "dev"]
