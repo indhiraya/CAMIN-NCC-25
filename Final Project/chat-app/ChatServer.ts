@@ -1,13 +1,13 @@
 import { Context } from "@oak/oak";
 
 type WebSocketWithUsername = WebSocket & { username: string };
-type AppEvent = { event: string; [key: string]: any };
-type Room = { name: string; private: boolean; password?: string };
+type AppEvent = { event: string;[key: string]: any };
+type Room = { name: string; private: boolean; password?: string; creator: string; };
 
 export default class ChatServer {
   private connectedClients: Map<string, WebSocketWithUsername> = new Map();
   private rooms: Room[] = [];
-  private userRooms: Map<string, string> = new Map(); 
+  private userRooms: Map<string, string> = new Map();
 
   private polls = new Map<string, {
     question: string;
@@ -94,7 +94,7 @@ export default class ChatServer {
         break;
 
       case "create-room":
-        this.createRoom(data.roomName, data.isPrivate, data.password);
+        this.createRoom(data.roomName, data.isPrivate, data.password, socket.username);
         break;
 
       case "join-room":
@@ -103,6 +103,10 @@ export default class ChatServer {
 
       case "leave-room":
         this.handleLeaveRoom(socket);
+        break;
+
+      case "delete-room":
+        this.handleDeleteRoom(socket, data.roomName);
         break;
     }
   }
@@ -244,10 +248,10 @@ export default class ChatServer {
     this.broadcastUpdateRooms();
   }
 
-  private createRoom(name: string, isPrivate: boolean = false, password: string | null = null) {
+  private createRoom(name: string, isPrivate: boolean = false, password: string | null = null, creator: string) {
     if (this.rooms.some(r => r.name === name)) return;
 
-    this.rooms.push({ name, private: isPrivate, password: password || undefined });
+    this.rooms.push({ name, private: isPrivate, password: password || undefined, creator });
 
     this.broadcastUpdateRooms();
   }
@@ -259,6 +263,27 @@ export default class ChatServer {
       event: "leave-room-success"
     }));
 
+    this.broadcastUpdateRooms();
+  }
+
+  private handleDeleteRoom(socket: WebSocketWithUsername, roomName: string) {
+    const roomIndex = this.rooms.findIndex(r => r.name === roomName);
+    if (roomIndex === -1) return;
+
+    const room = this.rooms[roomIndex];
+    if (room.creator !== socket.username) return;
+
+    for (const [username, roomNameValue] of this.userRooms.entries()) {
+      if (roomNameValue === roomName) {
+        this.userRooms.set(username, "Global");
+        const client = this.connectedClients.get(username);
+        client?.send(JSON.stringify({
+          event: "leave-room-success"
+        }));
+      }
+    }
+
+    this.rooms.splice(roomIndex, 1);
     this.broadcastUpdateRooms();
   }
 
